@@ -71,7 +71,7 @@ func buildIngress() *networking.Ingress {
 }
 
 // mocks the resolver for proxySSL
-type mockSecret struct {
+type MockSecret struct {
 	resolver.Mock
 }
 
@@ -90,6 +90,10 @@ func (m mockSecret) GetAuthCertificate(name string) (*resolver.AuthSSLCert, erro
 }
 
 func TestAnnotations(t *testing.T) {
+	type mockBackend struct {
+		resolver.Mock
+	}
+
 	ing := buildIngress()
 	data := map[string]string{}
 
@@ -104,7 +108,7 @@ func TestAnnotations(t *testing.T) {
 
 	ing.SetAnnotations(data)
 
-	fakeSecret := &mockSecret{}
+	fakeSecret := &MockSecret{}
 	i, err := NewParser(fakeSecret).Parse(ing)
 	if err != nil {
 		t.Errorf("Unexpected error with ingress: %v", err)
@@ -115,7 +119,7 @@ func TestAnnotations(t *testing.T) {
 		t.Errorf("expected *Config but got %v", u)
 	}
 
-	secret, err := fakeSecret.GetAuthCertificate("default/demo-secret")
+	secret, err := fakeSecret.GetAuthCertificate("default/demo-secret", false)
 	if err != nil {
 		t.Errorf("unexpected error getting secret %v", err)
 	}
@@ -146,7 +150,7 @@ func TestAnnotations(t *testing.T) {
 
 func TestInvalidAnnotations(t *testing.T) {
 	ing := buildIngress()
-	fakeSecret := &mockSecret{}
+	fakeSecret := &MockSecret{}
 	data := map[string]string{}
 
 	// No annotation
