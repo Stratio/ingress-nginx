@@ -8,7 +8,7 @@ hose {
     DEVTIMEOUT = 30
     DEPLOYONPRS = true
     ANCHORE_TEST = true
-    VERSIONING_TYPE = 'stratioVersion-x-y'
+    VERSIONING_TYPE = 'stratioVersion-3-3'
     UPSTREAM_VERSION = '1.2.0'
 
     DEV = { config ->
