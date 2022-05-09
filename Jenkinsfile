@@ -3,7 +3,7 @@
 
 hose {
     EMAIL = 'eos@stratio.com'
-    BUILDTOOL_IMAGE = 'stratio/ingress-nginx-builder:0.1.0'
+    BUILDTOOL_IMAGE = 'stratio/ingress-nginx-builder:0.2.0-M1'
     BUILDTOOL = 'make'
     DEVTIMEOUT = 30
     DEPLOYONPRS = true
