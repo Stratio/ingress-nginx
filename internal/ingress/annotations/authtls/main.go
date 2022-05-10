@@ -19,7 +19,6 @@ package authtls
 import (
 	"fmt"
 
-	"github.com/pkg/errors"
 	networking "k8s.io/api/networking/v1"
 
 	"regexp"

@@ -75,8 +75,8 @@ type MockSecret struct {
 	resolver.Mock
 }
 
-// GetAuthCertificate from mockSecret mocks the GetAuthCertificate for backend certificate authentication
-func (m mockSecret) GetAuthCertificate(name string) (*resolver.AuthSSLCert, error) {
+// GetAuthCertificate from MockSecret mocks the GetAuthCertificate for backend certificate authentication
+func (m MockSecret) GetAuthCertificate(name string) (*resolver.AuthSSLCert, error) {
 	if name != "default/demo-secret" {
 		return nil, errors.Errorf("there is no secret with name %v", name)
 	}
@@ -109,7 +109,7 @@ func TestAnnotations(t *testing.T) {
 	ing.SetAnnotations(data)
 
 	fakeSecret := &MockSecret{}
-	i, err := NewParser(fakeSecret).Parse(ing)
+	i, err := NewParser(fakeSecret.Mock).Parse(ing)
 	if err != nil {
 		t.Errorf("Unexpected error with ingress: %v", err)
 	}
@@ -154,7 +154,7 @@ func TestInvalidAnnotations(t *testing.T) {
 	data := map[string]string{}
 
 	// No annotation
-	_, err := NewParser(fakeSecret).Parse(ing)
+	_, err := NewParser(fakeSecret.Mock).Parse(ing)
 	if err == nil {
 		t.Errorf("Expected error with ingress but got nil")
 	}
@@ -162,7 +162,7 @@ func TestInvalidAnnotations(t *testing.T) {
 	// Invalid NameSpace
 	data[parser.GetAnnotationWithPrefix("proxy-ssl-secret")] = "demo-secret"
 	ing.SetAnnotations(data)
-	_, err = NewParser(fakeSecret).Parse(ing)
+	_, err = NewParser(fakeSecret.Mock).Parse(ing)
 	if err == nil {
 		t.Errorf("Expected error with ingress but got nil")
 	}
@@ -170,7 +170,7 @@ func TestInvalidAnnotations(t *testing.T) {
 	// Invalid Proxy Certificate
 	data[parser.GetAnnotationWithPrefix("proxy-ssl-secret")] = "default/invalid-demo-secret"
 	ing.SetAnnotations(data)
-	_, err = NewParser(fakeSecret).Parse(ing)
+	_, err = NewParser(fakeSecret.Mock).Parse(ing)
 	if err == nil {
 		t.Errorf("Expected error with ingress but got nil")
 	}

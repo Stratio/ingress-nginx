@@ -1122,7 +1122,6 @@ stream {
             proxy_buffer_size                       {{ $location.Proxy.BufferSize }};
             proxy_buffers                           {{ $location.Proxy.BuffersNumber }} {{ $location.Proxy.BufferSize }};
             proxy_request_buffering                 {{ $location.Proxy.RequestBuffering }};
-            proxy_http_version                      {{ $location.Proxy.ProxyHTTPVersion }};
 
             proxy_ssl_server_name       on;
             proxy_pass_request_headers  on;
