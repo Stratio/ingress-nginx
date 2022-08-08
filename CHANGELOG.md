@@ -2,7 +2,7 @@
 
 ## 1.2.0-0.4.1 
 
-* Fix vault ommitted code
+* Fix vault retrieve secret cecode
 
 ## 1.2.0-0.4.0 (2022-05-11)
 
