@@ -580,7 +580,6 @@ func New(
 
 			// If the default SSL certificate is stored in vault and not in disk, synch it
 			if !store.DefaultVaultSSLCertificateInDisk(store.defaultVaultSSLCertificate) {
-
 				klog.V(3).InfoS("AddFunc-The vault certificate is not in disk", store.defaultSSLCertificate)
 				store.syncSecret(store.defaultVaultSSLCertificate, true)
 			}
@@ -620,7 +619,6 @@ func New(
 				}
 
 				// If the default SSL certificate is stored in vault and not in disk, synch it
-
 				if !store.DefaultVaultSSLCertificateInDisk(store.defaultVaultSSLCertificate) {
 
 					klog.V(3).InfoS("UpdateFunc-The vault certificate is not in disk", store.defaultSSLCertificate)
