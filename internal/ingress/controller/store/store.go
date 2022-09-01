@@ -1209,7 +1209,6 @@ func toIngress(obj interface{}) (*networkingv1.Ingress, bool) {
 }
 
 func (s *k8sStore) DefaultVaultSSLCertificateInDisk(defaulVaultSSLCertificate string) bool {
-	klog.V(3).InfoS("Into the store check")
 	if defaulVaultSSLCertificate != "" {
 		klog.V(3).InfoS("Checking if", defaulVaultSSLCertificate, " is present on disk")
 		_, err := s.GetLocalSSLCert(defaulVaultSSLCertificate)
