@@ -2,7 +2,7 @@
 
 
 
-## 1.2.0-0.4.0 (2022-09-01)
+## 1.2.0-0.4.0 (2022-09-05)
 
 * Build the stratio ingress-nginx-controller with the community controller:1.2.0 as a base
 * Fix vault retrieve secret recode
