@@ -1,8 +1,8 @@
 # Changelog
 
-## 1.2.1-0.5.0 (upcoming)
+## 1.5.1-0.5.0 (upcoming)
 
-* Build the stratio ingress-nginx-controller with the community controller:1.2.1 as a base
+* Build the stratio ingress-nginx-controller with the community controller:1.5.1 as a base
 * Fix vault retrieve secret recode
 * Avoid race condition
 * [EOS-9406] Fix map CN / UID
