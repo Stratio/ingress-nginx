@@ -7,7 +7,7 @@ hose {
     BUILDTOOL = 'make'
     DEVTIMEOUT = 30
     VERSIONING_TYPE = 'stratioVersion-3-3'
-    UPSTREAM_VERSION = '1.2.1'
+    UPSTREAM_VERSION = '1.5.1'
     ANCHORE_TEST = true
     DEPLOYONPRS = true
 
