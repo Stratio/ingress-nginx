@@ -1,5 +1,5 @@
 ---
-# Plese notice that this branch is aligned with upstream's controller version 1.2.1
+# Plese notice that this branch is aligned with upstream's controller version 1.5.1
 
 # Ingress NGINX Controller
 
