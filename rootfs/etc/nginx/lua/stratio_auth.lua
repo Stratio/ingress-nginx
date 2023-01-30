@@ -123,17 +123,33 @@ function _M.create_cookie(userinfo_url, oauth2_cookie_name, stratio_cookie_name,
         stratio_jwt = create_jwt(oauth2_cookie, userinfo_url, signing_key)
 
         ngx.log(ngx.DEBUG, 'Cookie created, adding to response')
-        local ok, err = req_cookie:set({
-            key = stratio_cookie_name,
-            value = stratio_jwt,
-            path = "/",
-            secure = true,
-            httponly = true,
-            domain = ".k8s.alpha.labs.stratio.com",
-            samesite = "Lax",
-            expires = ngx.cookie_time(ngx.time() + 21600),
-            max_age = 21600
-        })
+
+        cookie_domain = os.getenv ("STRATIO_COOKIE_DOMAIN")
+
+        if cookie_domain then
+            local ok, err = req_cookie:set({
+                key = stratio_cookie_name,
+                value = stratio_jwt,
+                path = "/",
+                secure = true,
+                httponly = true,
+                domain = cookie_domain,
+                samesite = "Lax",
+                expires = ngx.cookie_time(ngx.time() + 21600),
+                max_age = 21600
+            })
+        else
+            local ok, err = req_cookie:set({
+                key = stratio_cookie_name,
+                value = stratio_jwt,
+                path = "/",
+                secure = true,
+                httponly = true,
+                samesite = "Lax",
+                expires = ngx.cookie_time(ngx.time() + 21600),
+                max_age = 21600
+            })
+        end
 
         if not ok then
             ngx.log(ngx.STDERR, 'Unexpected error setting the Stratio cookie: ', err)
