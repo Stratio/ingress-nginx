@@ -129,6 +129,7 @@ function _M.create_cookie(userinfo_url, oauth2_cookie_name, stratio_cookie_name,
             path = "/",
             secure = true,
             httponly = true,
+            domain = ".k8s.alpha.labs.stratio.com",
             samesite = "Lax",
             expires = ngx.cookie_time(ngx.time() + 21600),
             max_age = 21600

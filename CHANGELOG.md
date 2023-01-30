@@ -2,6 +2,10 @@
 
 ## 1.2.0-0.4.1 (2022-11-07)
 
+* [EOS-10808] Set explicit domain for stratio-cookie
+
+## 1.2.0-0.4.1 (2022-11-07)
+
 * [EOS-9406] Fix map CN / UID
 
 ## 1.2.0-0.4.0 (2022-09-05)
