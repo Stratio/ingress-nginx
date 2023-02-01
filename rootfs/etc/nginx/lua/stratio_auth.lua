@@ -96,7 +96,7 @@ function _M.create_cookie(userinfo_url, oauth2_cookie_name, stratio_cookie_name,
         end
         return
     end
-    
+
     -- Get request's cookies
     local req_cookie, err = ck:new()
     if not req_cookie then
@@ -118,36 +118,26 @@ function _M.create_cookie(userinfo_url, oauth2_cookie_name, stratio_cookie_name,
     -- If there's no Stratio cookie in the request, add it
     local stratio_cookie, err = req_cookie:get(stratio_cookie_name)
     if not stratio_cookie then
-
         ngx.log(ngx.DEBUG, 'Cookie not found in request')
         stratio_jwt = create_jwt(oauth2_cookie, userinfo_url, signing_key)
         ngx.log(ngx.DEBUG, 'Cookie created, adding to response')
-        local cookie_domain = os.getenv ("STRATIO_COOKIE_DOMAIN")
+
+        local req_cookie_data = {
+            key = stratio_cookie_name,
+            value = stratio_jwt,
+            path = "/",
+            secure = true,
+            httponly = true,
+            samesite = "Lax",
+            expires = ngx.cookie_time(ngx.time() + 21600),
+            max_age = 21600
+        }
+        local cookie_domain = os.getenv("STRATIO_COOKIE_DOMAIN")
         if cookie_domain then
-            local ok, err = req_cookie:set({
-                key = stratio_cookie_name,
-                value = stratio_jwt,
-                path = "/",
-                secure = true,
-                httponly = true,
-                domain = cookie_domain,
-                samesite = "Lax",
-                expires = ngx.cookie_time(ngx.time() + 21600),
-                max_age = 21600
-            })
-        else
-            local ok, err = req_cookie:set({
-                key = stratio_cookie_name,
-                value = stratio_jwt,
-                path = "/",
-                secure = true,
-                httponly = true,
-                samesite = "Lax",
-                expires = ngx.cookie_time(ngx.time() + 21600),
-                max_age = 21600
-            })
+            req_cookie_data.domain = cookie_domain
         end
 
+        local ok, err = req_cookie:set(req_cookie_data)
         if not ok then
             ngx.log(ngx.STDERR, 'Unexpected error setting the Stratio cookie: ', err)
             return 403
@@ -156,7 +146,6 @@ function _M.create_cookie(userinfo_url, oauth2_cookie_name, stratio_cookie_name,
         ngx.log(ngx.DEBUG, 'Adding cookie to request')
         ngx.req.set_header("Cookie", stratio_cookie_name .. "=" .. stratio_jwt .. ";" .. ngx.var.http_cookie);
     else
-
         ngx.log(ngx.DEBUG, 'Cookie found in request, verifying signature, expiration and issuer')
         local jwt = require "resty.jwt"
         local jwt_obj = jwt:verify(verification_key, stratio_cookie, {
@@ -169,32 +158,23 @@ function _M.create_cookie(userinfo_url, oauth2_cookie_name, stratio_cookie_name,
             ngx.log(ngx.DEBUG, 'Invalid JWT, generating a new one')
             stratio_jwt = create_jwt(oauth2_cookie, userinfo_url, signing_key)
             ngx.log(ngx.DEBUG, 'Cookie created, adding to response')
-            local cookie_domain = os.getenv ("STRATIO_COOKIE_DOMAIN")
+
+            local req_cookie_data = {
+                key = stratio_cookie_name,
+                value = stratio_jwt,
+                path = "/",
+                secure = true,
+                httponly = true,
+                samesite = "Lax",
+                expires = ngx.cookie_time(ngx.time() + 21600),
+                max_age = 21600
+            }
+            local cookie_domain = os.getenv("STRATIO_COOKIE_DOMAIN")
             if cookie_domain then
-                local ok, err = req_cookie:set({
-                    key = stratio_cookie_name,
-                    value = stratio_jwt,
-                    path = "/",
-                    secure = true,
-                    httponly = true,
-                    domain = cookie_domain,
-                    samesite = "Lax",
-                    expires = ngx.cookie_time(ngx.time() + 21600),
-                    max_age = 21600
-                })
-            else
-                local ok, err = req_cookie:set({
-                    key = stratio_cookie_name,
-                    value = stratio_jwt,
-                    path = "/",
-                    secure = true,
-                    httponly = true,
-                    samesite = "Lax",
-                    expires = ngx.cookie_time(ngx.time() + 21600),
-                    max_age = 21600
-                })
+                req_cookie_data.domain = cookie_domain
             end
 
+            local ok, err = req_cookie:set(req_cookie_data)
             if not ok then
                 ngx.log(ngx.STDERR, 'Unexpected error setting the Stratio cookie: ', err)
                 return 401
@@ -213,7 +193,7 @@ function _M.create_cookie(userinfo_url, oauth2_cookie_name, stratio_cookie_name,
                 end
                 mycookiestr = mycookiestr .. k .. "=" .. v .. ";"
             end
-            
+
             ngx.log(ngx.DEBUG, 'Adding cookie to request')
             ngx.req.set_header("Cookie", stratio_cookie_name .. "=" .. stratio_jwt .. ";" .. mycookiestr);
         else
