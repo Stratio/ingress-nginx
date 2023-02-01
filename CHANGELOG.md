@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.0-0.4.2 (upcoming)
+## 1.2.0-0.4.2 (2023-02-01)
 
 * [EOS-10808] Set explicit domain for stratio-cookie
 
