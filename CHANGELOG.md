@@ -1,6 +1,5 @@
 # Changelog
 
-## 1.5.1-0.6.0 (upcoming)
 
 * Upcoming changelog
 
@@ -10,6 +9,8 @@
 * Fix vault retrieve secret recode
 * Avoid race condition
 * [EOS-9406] Fix map CN / UID
+* [EOS-10808] Set explicit domain for stratio-cookie
+
 
 ## 1.2.0-0.4.0 (2022-08-08)
 
