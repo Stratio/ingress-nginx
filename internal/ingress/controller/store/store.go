@@ -925,7 +925,7 @@ func (s *k8sStore) updateSecretIngressMap(ing *networkingv1.Ingress) {
 		"proxy-ssl-secret",
 		"proxy-ssl-vault",
 		"secure-verify-ca-secret",
-		"default-ssl-certificate-vault",
+		"tls-cert-vault",
 	}
 	for _, ann := range secretAnnotations {
 		klog.V(3).InfoS("Checking annotation for updating Secrets Ingress Map", "annotation", ann)
@@ -950,7 +950,7 @@ func objectRefAnnotationNsKey(ann string, ing *networkingv1.Ingress) (string, er
 	vaultAnnotations := []string{
 		"auth-tls-vault",
 		"proxy-ssl-vault",
-		"default-ssl-certificate-vault",
+		"tls-cert-vault",
 	}
 
 	klog.V(3).InfoS("Getting the annotation", "annotation", ann)
@@ -983,12 +983,17 @@ func (s *k8sStore) syncSecrets(ing *networkingv1.Ingress) {
 	var usingVault bool
 	validVaultUrl := regexp.MustCompile(`^/(?:[\w-]+)[\w\*\.\/\-\_]+$`)
 	key = k8s.MetaNamespaceKey(ing)
+	klog.V(3).InfoS("The key is", "key", key)
+	klog.V(3).Infof("fThe key is", "key", key)
 	for _, secrKey := range s.secretIngressMap.ReferencedBy(key) {
+		klog.V(3).InfoS("The secretKey in the loop", "secrKey", secrKey)
+
 		if validVaultUrl.MatchString(secrKey) {
-			klog.V(3).Infof("Secret key seems a vault url, We are using vault secret stored in  vault to sync the secrets in the ingressmap storage", "key", secrKey)
+			klog.V(3).Infof("Secret defined as %v seems a vault url, We are using vault secret stored in  vault to sync the secrets in the ingressmap storage, for %v", key, secrKey)
 			usingVault = true
 		} else {
-			klog.V(3).Infof("Using k8s secret defined as %v, syncing the secret stored in the ingressmap", "key", secrKey)
+			usingVault = false
+			klog.V(3).Infof("Using k8s secret defined as %v, syncing the secret stored in the ingressmap", key, secrKey)
 		}
 
 		s.syncSecret(secrKey, usingVault)
@@ -1152,7 +1157,7 @@ func (s *k8sStore) GetDefaultBackend() defaults.Backend {
 }
 
 func (s *k8sStore) GetVaultAnnotation(ing *networkingv1.Ingress) (bool, string) {
-	klog.Info("Getting annotation default-ssl-certificate-vault status by checking the annotation field")
+	klog.Info("Getting annotation tls-cert-vault status by checking the annotation field")
 	vaultCertificatePath := annotations.NewAnnotationExtractor(s).Extract(ing).VaultPathTLS
 	if vaultCertificatePath != "" {
 		return true, vaultCertificatePath
