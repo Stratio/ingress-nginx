@@ -184,7 +184,14 @@ func (s *k8sStore) getPemCertificate(secretName string, usingVault bool) (*ingre
 	// We  check if we have got a vault secret annotation and proceed accordingly
 	if usingVault {
 		// UID is needed for checking certificates in a later step, but it has to be consistent and not random
-		klog.V(3).InfoS("This is the Secretname used", "secretName", secretName)
+		// In addition, two certificates cannot have the same UID so we are reversing the vault path.
+		vaultSplit := strings.Split(secretName, "/")
+		var SecretNameHex string
+		for i := len(vaultSplit) - 1; i >= 0; i-- {
+			fmt.Println(vaultSplit[i])
+			trx := hex.EncodeToString([]byte(vaultSplit[i]))
+			SecretNameHex = SecretNameHex + trx
+		}
 		secretNameHex := hex.EncodeToString([]byte(secretName))
 		klog.V(3).InfoS("This is the Hex", "secretNameHex", secretNameHex)
 		uid = fmt.Sprintf("%s-%s-%s-%s-%s", secretNameHex[:8], secretNameHex[9:13], secretNameHex[14:18], secretNameHex[19:23], secretNameHex[24:36])
