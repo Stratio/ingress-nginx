@@ -168,6 +168,7 @@ func foldCrtPem(pem string) string {
 	pem = strings.ReplaceAll(pem, "-----END CERTIFICATE-----", "\n-----END CERTIFICATE-----")
 	return pem
 }
+
 func foldKeyPem(pem string) string {
 	pem = strings.ReplaceAll(pem, "-----BEGIN RSA PRIVATE KEY-----", "\n-----BEGIN RSA PRIVATE KEY-----\n")
 	pem = strings.ReplaceAll(pem, "-----END RSA PRIVATE KEY-----", "\n-----END RSA PRIVATE KEY-----")
@@ -186,22 +187,18 @@ func (s *k8sStore) getPemCertificate(secretName string, usingVault bool) (*ingre
 		// UID is needed for checking certificates in a later step, but it has to be consistent and not random
 		// In addition, two certificates cannot have the same UID so we are reversing the vault path.
 		vaultSplit := strings.Split(secretName, "/")
-		var SecretNameHex string
-		for i := len(vaultSplit) - 1; i >= 0; i-- {
+		var secretNameHex string
+		var reverseSecretName string
+		for i := len(vaultSplit) - 1; i > 0; i-- {
 			fmt.Println(vaultSplit[i])
-			trx := hex.EncodeToString([]byte(vaultSplit[i]))
-			SecretNameHex = SecretNameHex + trx
+			klog.V(3).InfoS("Value of reverse chain", "split", (vaultSplit[i]), "chain", (vaultSplit[i]), "i", i)
+			reverseSecretName = reverseSecretName + vaultSplit[i]
 		}
-		secretNameHex := hex.EncodeToString([]byte(secretName))
-		klog.V(3).InfoS("This is the Hex", "secretNameHex", secretNameHex)
+		secretNameHex = hex.EncodeToString([]byte(reverseSecretName))
 		uid = fmt.Sprintf("%s-%s-%s-%s-%s", secretNameHex[:8], secretNameHex[9:13], secretNameHex[14:18], secretNameHex[19:23], secretNameHex[24:36])
-		klog.InfoS("Trying secret as a Vault Path", "secret", secretName)
-
-		crl = []byte("")
-		auth = []byte("")
+		klog.InfoS("Trying secret as a Vault Path", "secret", secretName, "uid", uid)
 
 		sslCertName = secretName
-		// Check if secretName has a namespace defined
 		sslCertNamespace = "vault"
 
 		if !strings.HasPrefix(sslCertName, "/") {
@@ -238,7 +235,6 @@ func (s *k8sStore) getPemCertificate(secretName string, usingVault bool) (*ingre
 
 	var sslCert *ingress.SSLCert
 	if okcert && okkey && !onlyca {
-		klog.V(3).InfoS("Not onlyca: okcert && okkey && !onlyca ")
 		if cert == nil {
 			return nil, fmt.Errorf("key 'tls.crt' missing from Secret %q", secretName)
 		}
@@ -248,21 +244,17 @@ func (s *k8sStore) getPemCertificate(secretName string, usingVault bool) (*ingre
 		}
 
 		// if there is no key we have to build the sslCert with the CA
-		klog.V(3).InfoS("Creating SSL Cert")
 		sslCert, err = ssl.CreateSSLCert(cert, key, uid)
 		if err != nil {
 			return nil, fmt.Errorf("unexpected error creating SSL Cert: %v", err)
 		}
 
-		klog.V(3).InfoS("Checking length of CA Cert")
-		if len(ca) > 0 && !usingVault {
-			klog.V(3).InfoS("Creating CA Cert")
+		if len(ca) > 0 {
 			caCert, err := ssl.CheckCACert(ca)
 			if err != nil {
 				return nil, fmt.Errorf("parsing CA certificate: %v", err)
 			}
 
-			klog.V(3).InfoS("StoreSSLCertOnDisk")
 			path, err := ssl.StoreSSLCertOnDisk(nsSecName, sslCert)
 			if err != nil {
 				return nil, fmt.Errorf("error while storing certificate and key: %v", err)
@@ -273,22 +265,18 @@ func (s *k8sStore) getPemCertificate(secretName string, usingVault bool) (*ingre
 			sslCert.CAFileName = path
 			sslCert.CASHA = file.SHA1(path)
 
-			klog.V(3).InfoS("Creating ConfigureCACertWithCertAndKey")
 			err = ssl.ConfigureCACertWithCertAndKey(nsSecName, ca, sslCert)
 			if err != nil {
 				return nil, fmt.Errorf("error configuring CA certificate: %v", err)
 			}
 
-			klog.V(3).InfoS("Checking if have to ConfigureCRL")
 			if len(crl) > 0 {
-				klog.V(3).InfoS("Doing ConfigureCRL")
 				err = ssl.ConfigureCRL(nsSecName, crl, sslCert)
 				if err != nil {
 					return nil, fmt.Errorf("error configuring CRL certificate: %v", err)
 				}
 			}
 		}
-		// TODO quizá asegurar que sea solo para TLS
 		msg := fmt.Sprintf("Configuring Secret %q for TLS encryption (CN: %v)", secretName, sslCert.CN)
 		if ca != nil {
 			msg += " and authentication"
@@ -300,7 +288,6 @@ func (s *k8sStore) getPemCertificate(secretName string, usingVault bool) (*ingre
 
 		klog.V(3).InfoS(msg)
 	} else if len(ca) > 0 {
-		klog.V(3).InfoS("When onlyCA")
 		sslCert, err = ssl.CreateCACert(ca)
 		if err != nil {
 			return nil, fmt.Errorf("unexpected error creating SSL Cert: %v", err)
@@ -323,7 +310,6 @@ func (s *k8sStore) getPemCertificate(secretName string, usingVault bool) (*ingre
 		// this does not enable Certificate Authentication
 		klog.V(3).InfoS("Configuring Secret for TLS authentication", "secret", secretName)
 	} else {
-		klog.V(3).InfoS("When is the rest")
 		if auth != nil {
 			return nil, ErrSecretForAuth
 		}
@@ -335,11 +321,7 @@ func (s *k8sStore) getPemCertificate(secretName string, usingVault bool) (*ingre
 	sslCert.Namespace = sslCertNamespace
 
 	// the default SSL certificate needs to be present on disk
-	klog.V(3).InfoS("This is the Secret Name,", "secretName", secretName)
-	klog.V(3).InfoS("This is the  the DefaultSSLCertificate", "DefaultSSLCertificate", s.defaultSSLCertificate)
-	klog.V(3).InfoS("This is the  the DefaultVaultSSLCertificate", "DefaultVaultSSLCertificate", s.defaultVaultSSLCertificate)
 	if s.defaultVaultSSLCertificate != "" {
-		klog.V(3).InfoS("Checking if default vault and secretname match")
 		if secretName == s.defaultVaultSSLCertificate {
 			klog.V(3).InfoS("secretName and defaultVaultSSLCertificate are the same, storing it in disk")
 			path, err := ssl.StoreSSLCertOnDisk(nsSecName, sslCert)
@@ -355,7 +337,6 @@ func (s *k8sStore) getPemCertificate(secretName string, usingVault bool) (*ingre
 		if err != nil {
 			return nil, fmt.Errorf("storing default SSL Certificate: %w", err)
 		}
-		klog.V(3).InfoS("Doing the sslCert.PemFileName clean", "path", path)
 		sslCert.PemFileName = path
 	}
 

@@ -1152,7 +1152,6 @@ func (n *NGINXController) getDefaultSSLCertificate() *ingress.SSLCert {
 func (n *NGINXController) createServers(data []*ingress.Ingress,
 	upstreams map[string]*ingress.Backend,
 	du *ingress.Backend) map[string]*ingress.Server {
-	klog.V(3).Info("CreateServers")
 
 	servers := make(map[string]*ingress.Server, len(data))
 	allAliases := make(map[string][]string, len(data))

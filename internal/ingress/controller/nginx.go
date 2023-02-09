@@ -983,6 +983,7 @@ func configureCertificates(rawServers []*ingress.Server) error {
 
 	configure := func(hostname string, sslCert *ingress.SSLCert) {
 		uid := emptyUID
+
 		if sslCert != nil {
 			uid = sslCert.UID
 
