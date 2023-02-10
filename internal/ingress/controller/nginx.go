@@ -486,7 +486,6 @@ func (n NGINXController) generateTemplate(cfg ngx_config.Configuration, ingressC
 	// https://trac.nginx.org/nginx/ticket/631
 	var longestName int
 	var serverNameBytes int
-
 	for _, srv := range ingressCfg.Servers {
 		hostnameLength := len(srv.Hostname)
 		if srv.RedirectFromToWWW {
@@ -976,6 +975,7 @@ type sslConfiguration struct {
 // configureCertificates JSON encodes certificates and POSTs it to an internal HTTP endpoint
 // that is handled by Lua
 func configureCertificates(rawServers []*ingress.Server) error {
+	// TODO la madre del cordero
 	configuration := &sslConfiguration{
 		Certificates: map[string]string{},
 		Servers:      map[string]string{},
