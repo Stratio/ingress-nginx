@@ -1334,8 +1334,9 @@ func (n *NGINXController) createServers(data []*ingress.Ingress,
 			//The certificate is retrieved for storing it in the ingress storage and being able to use it later
 			tlsSecretName := extractTLSSecretName(host, ing, n.store.GetLocalSSLCert)
 
-			klog.V(3).Info("Reading TLS certificates in secretName or in default-ssl-certificate-vault annotation")
+			klog.V(3).Info("Reading TLS certificates in secretName or in tls-cert-vault annotation")
 			// If no certificate stored in Vault is defined in annotations and no secretname stored in k8s, we use default
+			klog.V(3).Info("Printing value of anotation vaultpath: %q", anns.VaultPathTLS)
 			if (anns.VaultPathTLS == "") && (tlsSecretName == "") {
 				klog.V(3).Infof("Host %q is listed in the TLS section but secretName is empty. Using default certificate", host)
 				servers[host].SSLCert = n.getDefaultSSLCertificate()

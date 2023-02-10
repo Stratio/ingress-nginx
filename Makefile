@@ -12,7 +12,13 @@ deploy:
 .PHONY: build
 build:
 	bin/package.sh
-	bin/docker-build.sh $(name)
+	bin/docker-build.sh $(name) $(file)
+	bin/clean.sh
+
+
+build-debug:
+	bin/package.sh
+	bin/docker-build.sh stratio/ingress-nginx-debug Dockerfile.debug
 	bin/clean.sh
 
 chart:
