@@ -185,13 +185,20 @@ func (s *k8sStore) getPemCertificate(secretName string, usingVault bool) (*ingre
 	// We  check if we have got a vault secret annotation and proceed accordingly
 	if usingVault {
 		// UID is needed for checking certificates in a later step, but it has to be consistent and not random
-		secretNameHex := hex.EncodeToString([]byte(secretName))
-
+		// In addition, two certificates cannot have the same UID so we are reversing the vault path.
+		vaultSplit := strings.Split(secretName, "/")
+		var secretNameHex string
+		var reverseSecretName string
+		for i := len(vaultSplit) - 1; i > 0; i-- {
+			fmt.Println(vaultSplit[i])
+			klog.V(3).InfoS("Value of reverse chain", "split", (vaultSplit[i]), "chain", (vaultSplit[i]), "i", i)
+			reverseSecretName = reverseSecretName + vaultSplit[i]
+		}
+		secretNameHex = hex.EncodeToString([]byte(reverseSecretName))
 		uid = fmt.Sprintf("%s-%s-%s-%s-%s", secretNameHex[:8], secretNameHex[9:13], secretNameHex[14:18], secretNameHex[19:23], secretNameHex[24:36])
-		klog.InfoS("Trying secret as a Vault Path", "secret", secretName)
+		klog.InfoS("Trying secret as a Vault Path", "secret", secretName, "uid", uid)
 
 		sslCertName = secretName
-		// Check if secretName has a namespace defined
 		sslCertNamespace = "vault"
 
 		if !strings.HasPrefix(sslCertName, "/") {
@@ -270,7 +277,6 @@ func (s *k8sStore) getPemCertificate(secretName string, usingVault bool) (*ingre
 				}
 			}
 		}
-
 		msg := fmt.Sprintf("Configuring Secret %q for TLS encryption (CN: %v)", secretName, sslCert.CN)
 		if ca != nil {
 			msg += " and authentication"
@@ -315,12 +321,22 @@ func (s *k8sStore) getPemCertificate(secretName string, usingVault bool) (*ingre
 	sslCert.Namespace = sslCertNamespace
 
 	// the default SSL certificate needs to be present on disk
-	if secretName == s.defaultSSLCertificate {
+	if s.defaultVaultSSLCertificate != "" {
+		if secretName == s.defaultVaultSSLCertificate {
+			klog.V(3).InfoS("secretName and defaultVaultSSLCertificate are the same, storing it in disk")
+			path, err := ssl.StoreSSLCertOnDisk(nsSecName, sslCert)
+			if err != nil {
+				return nil, fmt.Errorf("storing Vault default SSL Certificate: %w", err)
+			}
+			klog.V(3).InfoS("Doing the sslCert.PemFileName in vault", "path", path)
+			sslCert.PemFileName = path
+		}
+	} else if secretName == s.defaultSSLCertificate {
+		klog.V(3).InfoS("secretName and defaultSSLCertificate are the same, storing it in disk")
 		path, err := ssl.StoreSSLCertOnDisk(nsSecName, sslCert)
 		if err != nil {
 			return nil, fmt.Errorf("storing default SSL Certificate: %w", err)
 		}
-
 		sslCert.PemFileName = path
 	}
 
