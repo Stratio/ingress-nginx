@@ -17,7 +17,7 @@ build:
 
 
 build-debug:
-	bin/package.sh
+	bin/package-debug.sh
 	bin/docker-build.sh stratio/ingress-nginx-debug Dockerfile.debug
 	bin/clean.sh
 
