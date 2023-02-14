@@ -975,7 +975,6 @@ type sslConfiguration struct {
 // configureCertificates JSON encodes certificates and POSTs it to an internal HTTP endpoint
 // that is handled by Lua
 func configureCertificates(rawServers []*ingress.Server) error {
-	// TODO la madre del cordero
 	configuration := &sslConfiguration{
 		Certificates: map[string]string{},
 		Servers:      map[string]string{},
