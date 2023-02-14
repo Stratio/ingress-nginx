@@ -16,14 +16,17 @@ fi
 export GOPATH="${BASEDIR}/dist"
 export HOME="${BASEDIR}/go"
 
-echo "Seting the dlv"
-#CGO_ENABLED=0 go get -ldflags "-s -w -extldflags  '-static'" github.com/go-delve/delve/cmd/dlv 
-#CGO_ENABLED=0 go build -buildvcs=false -gcflags "all=-N -l" -o  "${BASEDIR}/dist/dlv"
+echo "Building and downloading dlv..."
+mkdir ${BASEDIR}/dist/delve
+git clone https://github.com/go-delve/delve.git ${BASEDIR}/dist/delve
+cd ${BASEDIR}/dist/delve/cmd/dlv
+CGO_ENABLED=0  go build -ldflags "-s -w -extldflags '-static'" -o "${BASEDIR}/dist/dlv"
+
 cd "$GODIR_ROOT/nginx"
 echo "Building ingress-nginx nginx-ingress-controller..."
-CGO_ENABLED=0 GOOS=linux /usr/local/go/bin/go build -buildvcs=false -gcflags "-N -l" -o "${BASEDIR}/dist/nginx-ingress-controller" ${GODIR_ROOT}/nginx
+CGO_ENABLED=0 GOOS=linux /usr/local/go/bin/go build -buildvcs=false -gcflags "all=-N -l" -o "${BASEDIR}/dist/nginx-ingress-controller" ${GODIR_ROOT}/nginx
 echo "Cleaning ingress-nginx nginx dependencies..."
-#/usr/local/go/bin/go clean -modcache
+/usr/local/go/bin/go clean -modcache
 
 cd "$GODIR_ROOT/dbg"
 echo "Building ingress-nginx dbg..."
@@ -33,6 +36,6 @@ echo "Cleaning ingress-nginx dbg dependencies..."
 
 cd "$GODIR_ROOT/waitshutdown"
 echo "Building ingress-nginx wait-shutdown..."
-CGO_ENABLED=0 GOOS=linux /usr/local/go/bin/go build -buildvcs=false -gcflags "-N -l" -o "${BASEDIR}/dist/wait-shutdown" ${GODIR_ROOT}/waitshutdown
+CGO_ENABLED=0 GOOS=linux /usr/local/go/bin/go build -buildvcs=false -gcflags "all=-N -l" -o "${BASEDIR}/dist/wait-shutdown" ${GODIR_ROOT}/waitshutdown
 echo "Cleaning ingress-nginx waitshutdown dependencies..."
 /usr/local/go/bin/go clean -modcache

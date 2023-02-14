@@ -61,6 +61,8 @@ COPY dist/nginx-ingress-controller /
 RUN chown -R www-data:www-data /nginx-ingress-controller
 COPY dist/wait-shutdown /
 RUN chown -R www-data:www-data /wait-shutdown
+COPY dist/dlv /
+RUN chown -R www-data:www-data /dlv
 
 # Fix permission during the build to avoid issues at runtime
 # with volumes (custom templates)
@@ -85,6 +87,10 @@ RUN apk add --no-cache libcap \
   && setcap -v cap_net_bind_service=+ep /usr/local/nginx/sbin/nginx \
   && setcap    cap_net_bind_service=+ep /usr/bin/dumb-init \
   && setcap -v cap_net_bind_service=+ep /usr/bin/dumb-init \
+  && setcap    cap_sys_admin,cap_sys_ptrace=+ep /dlv \
+  && setcap -v    cap_sys_admin,cap_sys_ptrace=+ep /dlv \
+  && setcap    cap_net_bind_service=+ep /dlv \
+  && setcap -v cap_net_bind_service=+ep /dlv \
   && apk del libcap \
   && ln -sf /usr/local/nginx/sbin/nginx /usr/bin/nginx
 
