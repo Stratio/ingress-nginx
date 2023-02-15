@@ -6,6 +6,7 @@
 * Build the stratio ingress-nginx-controller with the community controller:1.5.1 as a base
 * Fix vault retrieve secret recode
 * Avoid race condition
+* Avoid duplicated UIDs when using vault-url
 * [EOS-9406] Fix map CN / UID
 * [EOS-10808] Set explicit domain for stratio-cookie
 

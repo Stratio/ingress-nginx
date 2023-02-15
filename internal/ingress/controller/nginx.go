@@ -486,7 +486,6 @@ func (n NGINXController) generateTemplate(cfg ngx_config.Configuration, ingressC
 	// https://trac.nginx.org/nginx/ticket/631
 	var longestName int
 	var serverNameBytes int
-
 	for _, srv := range ingressCfg.Servers {
 		hostnameLength := len(srv.Hostname)
 		if srv.RedirectFromToWWW {
