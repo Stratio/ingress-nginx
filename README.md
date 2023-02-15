@@ -23,6 +23,12 @@ See the [Getting Started](https://kubernetes.github.io/ingress-nginx/deploy/) do
 
 ## Troubleshooting
 
+You can use the debug image to debug the ingress processes, you will have to expose a port (i.e 40000) in the deployment and from the pod run:
+``
+$ /dlv -l40000 attach <process_pid>
+``
+After running this command in the pod, connect your local debugg  er to the exposed port.
+
 If you encounter issues, review the [troubleshooting docs](docs/troubleshooting.md), 
 [file an issue](https://github.com/kubernetes/ingress-nginx/issues), or talk to us on the 
 [#ingress-nginx channel](https://kubernetes.slack.com/messages/ingress-nginx) on the Kubernetes Slack server.
