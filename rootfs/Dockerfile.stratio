@@ -20,7 +20,7 @@ RUN apk update \
   && apk upgrade \
   && apk add --no-cache \
   && apk upgrade curl --repository=https://dl-cdn.alpinelinux.org/alpine/v3.14/main \  
-  && apk upgrade openssl --repository=https://dl-cdn.alpinelinux.org/alpine/v3.14/main \  
+  && apk upgrade openssl --repository=https://dl-cdn.alpinelinux.org/alpine/v3.15/main \  
   && apk add make --repository=https://dl-cdn.alpinelinux.org/alpine/v3.14/main \
     diffutils make unzip \
   && apk upgrade libxml2 \
