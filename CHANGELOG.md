@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.5.1-0.5.0 (2023-02-15)
+## 1.5.1-0.5.0 (2023-06-27)
 
 
 * Build the stratio ingress-nginx-controller with the community controller:1.5.1 as a base
