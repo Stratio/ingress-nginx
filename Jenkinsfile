@@ -8,7 +8,7 @@ hose {
     DEVTIMEOUT = 30
     VERSIONING_TYPE = 'stratioVersion-3-3'
     UPSTREAM_VERSION = '1.5.1'
-    GRYPE_TEST = true
+    GRYPE_TEST = false
     DEPLOYONPRS = true
 
     DEV = { config ->
