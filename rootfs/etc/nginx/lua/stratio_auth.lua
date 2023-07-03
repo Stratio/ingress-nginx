@@ -146,14 +146,19 @@ function _M.create_cookie(userinfo_url, oauth2_cookie_name, stratio_cookie_name,
         end
 
         -- add stratio-tenant cookie
+        local jwt = require "resty.jwt"
         local decoded_jwt = jwt:load_jwt(stratio_jwt)
-        local tenant = decoded_token.payload.tenant
+        local tenant = decoded_jwt.payload.tenant
         local tenant_cookie_name = os.getenv("STRATIO_TENANT_COOKIE_NAME")
         if tenant_cookie_name == nil then
             tenant_cookie_name = 'stratio-tenant'
         end
 
         ngx.log(ngx.DEBUG, 'Adding cookies to request')
+        -- TODO REMOVE BEFORE MERGE
+        ngx.log(ngx.INFO, 'COOKIE NAME: ',tenant_cookie_name)
+        ngx.log(ngx.INFO, 'DEFAULT TENANT: ',tenant)
+        -- UNTIL HERE
         ngx.req.set_header("Cookie", stratio_cookie_name .. "=" .. stratio_jwt .. ";" .. ngx.var.http_cookie);
         ngx.req.set_header("Cookie", tenant_cookie_name .. "=" .. tenant .. ";" .. ngx.var.http_cookie);
 
