@@ -10,6 +10,8 @@ hose {
     UPSTREAM_VERSION = '1.5.1'
     GRYPE_TEST = false
     DEPLOYONPRS = true
+    BUILDTOOL_MEMORY_REQUEST = "512Mi"
+    BUILDTOOL_MEMORY_LIMIT = "8192Mi"
 
     DEV = { config ->
         doPackage(config)

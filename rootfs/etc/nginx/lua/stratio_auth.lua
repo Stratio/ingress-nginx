@@ -159,7 +159,7 @@ function _M.create_cookie(userinfo_url, oauth2_cookie_name, stratio_cookie_name,
         ngx.log(ngx.STDERR, 'COOKIE NAME: ',tenant_cookie_name)
         ngx.log(ngx.STDERR, 'DEFAULT TENANT: ',tenant)
         -- UNTIL HERE
-        ngx.req.set_header("Cookie", tenant_cookie_name .. "=" .. tenant .. ";" .. stratio_cookie_name .. "=" .. stratio_jwt .. ";" .. ngx.var.http_cookie);
+        ngx.req.set_header("Cookie",  {stratio_cookie_name .. "=" .. stratio_jwt .. ";" .. ngx.var.http_cookie, tenant_cookie_name .. "=" .. tenant .. ";" ..ngx.var.http_cookie});
 
 
     else
