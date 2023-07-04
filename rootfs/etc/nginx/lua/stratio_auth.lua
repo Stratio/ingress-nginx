@@ -145,8 +145,26 @@ function _M.create_cookie(userinfo_url, oauth2_cookie_name, stratio_cookie_name,
             return 403
         end
 
-        ngx.log(ngx.DEBUG, 'Adding cookie to request')
+        -- add stratio-tenant cookie
+        local jwt = require "resty.jwt"
+        local decoded_jwt = jwt:load_jwt(stratio_jwt)
+        local tenant = decoded_jwt.payload.tenant
+        local tenant_cookie_name = os.getenv("STRATIO_TENANT_COOKIE_NAME")
+        if tenant_cookie_name == nil then
+            tenant_cookie_name = 'stratio-tenant'
+        end
+        local tenant_cookie_data = {
+            key = tenant_cookie_name,
+            value = tenant,
+            path = "/",
+            secure = true,
+            httponly = true,
+            samesite = "Lax"
+        }
+        req_cookie:set(tenant_cookie_data)
+        ngx.log(ngx.DEBUG, 'Adding cookies to request')
         ngx.req.set_header("Cookie", stratio_cookie_name .. "=" .. stratio_jwt .. ";" .. ngx.var.http_cookie);
+
     else
         ngx.log(ngx.DEBUG, 'Cookie found in request, verifying signature, expiration and issuer')
         local jwt = require "resty.jwt"
