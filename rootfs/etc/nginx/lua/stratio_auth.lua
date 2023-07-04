@@ -153,7 +153,15 @@ function _M.create_cookie(userinfo_url, oauth2_cookie_name, stratio_cookie_name,
         if tenant_cookie_name == nil then
             tenant_cookie_name = 'stratio-tenant'
         end
-        req_cookie:set({key = tenant_cookie_name, value = tenant})
+        local tenant_cookie_data = {
+            key = tenant_cookie_name,
+            value = tenant,
+            path = "/",
+            secure = true,
+            httponly = true,
+            samesite = "Lax"
+        }
+        req_cookie:set(tenant_cookie_data)
         ngx.log(ngx.DEBUG, 'Adding cookies to request')
         -- TODO REMOVE BEFORE MERGE
         ngx.log(ngx.STDERR, 'COOKIE NAME: ',tenant_cookie_name)
