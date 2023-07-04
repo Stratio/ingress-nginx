@@ -163,10 +163,6 @@ function _M.create_cookie(userinfo_url, oauth2_cookie_name, stratio_cookie_name,
         }
         req_cookie:set(tenant_cookie_data)
         ngx.log(ngx.DEBUG, 'Adding cookies to request')
-        -- TODO REMOVE BEFORE MERGE
-        ngx.log(ngx.STDERR, 'COOKIE NAME: ',tenant_cookie_name)
-        ngx.log(ngx.STDERR, 'DEFAULT TENANT: ',tenant)
-        -- UNTIL HERE
         ngx.req.set_header("Cookie", stratio_cookie_name .. "=" .. stratio_jwt .. ";" .. ngx.var.http_cookie);
 
 
