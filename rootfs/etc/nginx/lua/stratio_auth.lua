@@ -165,7 +165,6 @@ function _M.create_cookie(userinfo_url, oauth2_cookie_name, stratio_cookie_name,
         ngx.log(ngx.DEBUG, 'Adding cookies to request')
         ngx.req.set_header("Cookie", stratio_cookie_name .. "=" .. stratio_jwt .. ";" .. ngx.var.http_cookie);
 
-
     else
         ngx.log(ngx.DEBUG, 'Cookie found in request, verifying signature, expiration and issuer')
         local jwt = require "resty.jwt"
