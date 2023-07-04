@@ -153,13 +153,13 @@ function _M.create_cookie(userinfo_url, oauth2_cookie_name, stratio_cookie_name,
         if tenant_cookie_name == nil then
             tenant_cookie_name = 'stratio-tenant'
         end
-
+        req_cookie:set({key = tenant_cookie_name, value = tenant})
         ngx.log(ngx.DEBUG, 'Adding cookies to request')
         -- TODO REMOVE BEFORE MERGE
         ngx.log(ngx.STDERR, 'COOKIE NAME: ',tenant_cookie_name)
         ngx.log(ngx.STDERR, 'DEFAULT TENANT: ',tenant)
         -- UNTIL HERE
-        ngx.req.set_header("Cookie",  {stratio_cookie_name .. "=" .. stratio_jwt .. ";" .. ngx.var.http_cookie, tenant_cookie_name .. "=" .. tenant .. ";" ..ngx.var.http_cookie});
+        ngx.req.set_header("Cookie", stratio_cookie_name .. "=" .. stratio_jwt .. ";" .. ngx.var.http_cookie);
 
 
     else
