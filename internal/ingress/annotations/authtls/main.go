@@ -95,9 +95,6 @@ func (a authTLS) Parse(ing *networking.Ingress) (interface{}, error) {
 	config := &Config{}
 
 	tlsauthsecret, err := parser.GetStringAnnotation("auth-tls-vault", ing)
-	if err != nil {
-		return &Config{}, err
-	}
 
 	// If  there is no secret in vault check for K8s secret
 	if tlsauthsecret == "" {
