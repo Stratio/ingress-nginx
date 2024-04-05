@@ -2,6 +2,7 @@
 
 BASEDIR="$(realpath "$(dirname "$0")/..")"
 GODIR_ROOT="$BASEDIR/cmd"
+GOCACHE="/tmp"
 
 #### PREPARE
 rm -rf "${BASEDIR}/dist"
