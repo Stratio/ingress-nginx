@@ -13,7 +13,7 @@ hose {
     SKIPONPR = false
 
     DEV = { config ->
-        doPackage(config, parameters: "GOCACHE=/tmp")
+        doPackage(conf: config, parameters: "GOCACHE=/tmp")
         def SKIPONPR = false
         doDocker(conf: config, dockerfile: "rootfs/Dockerfile.stratio")
         doHelmChart(conf: config, helmTarget: "chart")
