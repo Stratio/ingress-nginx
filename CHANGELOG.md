@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0-0.4.3 (upcoming)
+
+* [EOS-12641] Client certificate auth is broken in ingress-nginx-controller
+
 ## 1.2.0-0.4.2 (2023-02-01)
 
 * [EOS-10808] Set explicit domain for stratio-cookie
