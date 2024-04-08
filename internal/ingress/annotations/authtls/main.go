@@ -24,6 +24,7 @@ import (
 	"regexp"
 
 	"k8s.io/ingress-nginx/internal/ingress/annotations/parser"
+	"k8s.io/ingress-nginx/internal/ingress/errors"
 	ing_errors "k8s.io/ingress-nginx/internal/ingress/errors"
 	"k8s.io/ingress-nginx/internal/ingress/resolver"
 	"k8s.io/ingress-nginx/internal/k8s"
@@ -95,28 +96,28 @@ func (a authTLS) Parse(ing *networking.Ingress) (interface{}, error) {
 	config := &Config{}
 
 	tlsauthsecret, err := parser.GetStringAnnotation("auth-tls-vault", ing)
-	if err != nil {
-		return &Config{}, err
+	if err != nil && !errors.IsMissingAnnotations(err) {
+		return config, err
 	}
 
 	// If  there is no secret in vault check for K8s secret
 	if tlsauthsecret == "" {
-		tlsauthsecret, err := parser.GetStringAnnotation("auth-tls-secret", ing)
+		tlsauthsecret, err = parser.GetStringAnnotation("auth-tls-secret", ing)
 		if err != nil {
-			return &Config{}, err
+			return config, err
 		}
 		secretInVault = false
 
 		_, _, err = k8s.ParseNameNS(tlsauthsecret)
 		if err != nil {
-			return &Config{}, ing_errors.NewLocationDenied(err.Error())
+			return config, ing_errors.NewLocationDenied(err.Error())
 		}
 	}
 
 	authCert, err := a.r.GetAuthCertificate(tlsauthsecret, secretInVault)
 	if err != nil {
 		e := fmt.Errorf("error obtaining certificate: %w", err)
-		return &Config{}, ing_errors.LocationDenied{Reason: e}
+		return config, ing_errors.LocationDenied{Reason: e}
 	}
 	config.AuthSSLCert = *authCert
 

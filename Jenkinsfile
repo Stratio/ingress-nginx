@@ -1,11 +1,14 @@
 @Library('libpipelines@master') _
 
+def myOverrides = [
+  BUILDTOOL_MEMORY_LIMIT: '6Gi',
+  BUILDTOOL_MEMORY_REQUEST: '3Gi',]
 
 hose {
     EMAIL = 'eos@stratio.com'
-    BUILDTOOL_IMAGE = 'stratio/ingress-nginx-builder:0.2.0'
+    BUILDTOOL_IMAGE = 'golang:1.17'
     BUILDTOOL = 'make'
-    DEVTIMEOUT = 30
+    DEVTIMEOUT = 60
     DEPLOYONPRS = true
     ANCHORE_TEST = true
     VERSIONING_TYPE = 'stratioVersion-3-3'
@@ -13,7 +16,7 @@ hose {
     SKIPONPR = false
 
     DEV = { config ->
-        doPackage(config)
+        doPackage(conf: config, parameters: "GOCACHE=/tmp", buildToolOverride: myOverrides)
         def SKIPONPR = false
         doDocker(conf: config, dockerfile: "rootfs/Dockerfile.stratio")
         doHelmChart(conf: config, helmTarget: "chart")
