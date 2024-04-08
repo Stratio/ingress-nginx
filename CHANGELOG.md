@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.5.1-0.5.0 (2023-07-04)
 
+## 1.5.1-0.5.1 (upcoming)
+
+* [EOS-12641] Client certificate auth is broken in ingress-nginx-controller
+
+## 1.5.1-0.5.0 (2023-07-04)
 
 * Build the stratio ingress-nginx-controller with the community controller:1.5.1 as a base
 * Fix vault retrieve secret recode
