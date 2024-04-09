@@ -24,14 +24,15 @@ RUN apk update \
   && apk add make --repository=https://dl-cdn.alpinelinux.org/alpine/v3.14/main \
     diffutils make unzip \
   && apk upgrade libxml2 \
+  && apk add wget \
   && rm -rf /var/cache/apk/*
 
 # JWT manipulation dependencies
 ENV LUAROCKS_VERSION 3.8.0
-ENV LUAROCKS_SHA ab6612ca9ab87c6984871d2712d05525775e8b50172701a0a1cabddf76de2be7
+ENV LUAROCKS_SHA 56ab9b90f5acbc42eb7a94cf482e6c058a63e8a1effdf572b8b2a6323a06d923
 
 RUN wget -O /tmp/luarocks.tgz \
-  https://github.com/luarocks/luarocks/archive/v${LUAROCKS_VERSION}.tar.gz \
+  https://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz \
   && echo "${LUAROCKS_SHA} */tmp/luarocks.tgz" | sha256sum -c - \
   && tar -C /tmp -xzf /tmp/luarocks.tgz \
   && cd /tmp/luarocks* \
