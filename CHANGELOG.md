@@ -1,7 +1,7 @@
 # Changelog
 
 
-## 1.5.1-0.5.1 (upcoming)
+## 1.5.1-0.5.1 (2024-04-10)
 
 * [EOS-12641] Client certificate auth is broken in ingress-nginx-controller
 
